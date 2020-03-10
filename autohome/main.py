@@ -57,6 +57,7 @@ def get_koubei():
     base_dir = 'C:\\workspace\\python\\autohome_test\\autohome_test\\'
     filename1 = 'car_model_id.txt'
     target_file = 'car_id.txt'
+    # TODO 需要去填写 data_car_id/car_model_id.txt
     id_list = open('data_car_id/car_model_id.txt', 'r').readlines()  # e.g. ['989\n', '975\n', '972\n', '971\n', '97\n']
     while id_list:
         # if-else是为了保证按照是按照每三个汽车id进行爬取口碑
