@@ -59,7 +59,7 @@ def get_koubei():
     target_file = 'car_id.txt'
     id_list = open('data_car_id/car_model_id.txt', 'r').readlines()  # e.g. ['989\n', '975\n', '972\n', '971\n', '97\n']
     while id_list:
-        # 用这个样的if-else是为了保证按照是按照每三个汽车id进行爬取口碑
+        # if-else是为了保证按照是按照每三个汽车id进行爬取口碑
         if len(id_list) > 3:
             tmp = id_list[:3]
             id_list = id_list[3:]
@@ -73,6 +73,8 @@ def get_koubei():
                 f.write(x)
             f.close()
         print('    ......\n',)
+
+        #TODO 选择需要的spider  e.g. append_koubei 为更新口碑 koubei为重新爬取
         os.system('scrapy crawl append_koubei -s LOG_FILE=scrapy.log')
         print('\n.........   done')
 

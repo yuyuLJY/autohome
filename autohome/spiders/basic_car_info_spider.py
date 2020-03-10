@@ -6,7 +6,7 @@ import re
 import pandas as pd
 from items import CarbasicInfo
 
-# **爬取汽车（分类/ID/国籍/价格）等基本信息**
+# 爬取汽车（分类/ID/国籍/价格）等基本信息
 class BasicCarInfoSpider(scrapy.Spider):
     name = 'basic_car_infomation'
     #allowed_domains = ['douban.com']

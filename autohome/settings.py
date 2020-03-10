@@ -64,6 +64,8 @@ COOKIES_ENABLED = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+
+# KoubeiCollectionMongoPipeline AutohomePipeline
 ITEM_PIPELINES = {
     'autohome.pipelines.AutohomePipeline': 300,
 }

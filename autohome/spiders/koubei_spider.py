@@ -33,10 +33,6 @@ class WomSpider(scrapy.Spider):
         base_url = "https://koubei.app.autohome.com.cn/autov8.8.5/alibi/seriesalibiinfos-pm2-ss"
         start_urls.append(base_url + car_model_id + '-st0-p1-s20-isstruct1-o0.json')
 
-    # start_urls = open('tmp_wom_urls.txt'  'r').readlines()
-    #allowed_domains = ['koubei.app.autohome.com.cn' 'reply.autohome.com.cn']
-    index = 0
-
 
     def parse(self, response):
         if response.status == 200:
@@ -46,7 +42,6 @@ class WomSpider(scrapy.Spider):
             pagecount = result['pagecount']
             seriesid = result['seriesid']
             wom_list = result['list']
-            #print(pageindex   pagecount)
             for wom in wom_list:
                 koubeiid = wom['Koubeiid']
                 wom_url = self.wom_base_url + str(koubeiid)
@@ -54,13 +49,11 @@ class WomSpider(scrapy.Spider):
 
             filename = response.url.split('/')[-1]
 
-            #print(type(str(response.body)))
-            self.save_data(filename,response.body) #TODO bytes->添加了.decode('utf-8')
+            self.save_data(filename,response.body)
             # 口碑抓取，进行翻页
             if pageindex < pagecount:
-                print(pageindex ,pagecount,seriesid)
                 url_ = self.base_url + str(seriesid) + '-st0-p' + str(pageindex + 1) + '-s20-isstruct0-o0.json'
-                print('口碑',url_)
+                print('翻页', url_)
                 yield scrapy.Request(url_ ,self.parse)
 
         elif response.status == 302:
@@ -110,12 +103,10 @@ class WomSpider(scrapy.Spider):
             item['created'] = result['created']
 
             yield item
-            #print(response.body.decode('utf-8'))
-            self.save_data(str(result['eid']) ,response.body) #TODO 添加了.decode('utf-8')
+            self.save_data(str(result['eid']) ,response.body)
 
             comment_num = result['commentcount'] #评论的个数
             # 如果有评论，把评论爬取出来
-            print(comment_num)
             if comment_num > 0:
                 myreply_url = 'https://koubei.app.autohome.com.cn/autov9.13.0/news/KouBeiComments.ashx?pm=1&koubeiId='+str(result['eid'])+'&pagesize=20&lastid=0&hot=0'
                 yield scrapy.Request(myreply_url,self.reply_parse)
@@ -133,13 +124,12 @@ class WomSpider(scrapy.Spider):
         :param response:
         :return:
         '''
-        #print('-------------------------'+str(response.status))
         if response.status == 200:
             data = json.loads(response.body)
             # 解析出eid
             eid = re.search(r'&koubeiId=(\d+)&', response.url).group(1)  # 口碑的ID
             page_size = re.search(r'&pagesize=(\d+)&', response.url).group(1)
-            # TODO 构造规则
+            # 构造规则
             # 补充：假设一个口碑有42条评论。每页page_size=20，一共有3页
             # 第一页第一条评论的位置为floor=42
             # 下一页的url，需要上一页最后一个评论的用户id来构造，即lastid
@@ -154,11 +144,11 @@ class WomSpider(scrapy.Spider):
             last_comment_number = len(data['result']['list']) # 此页面一共有多少个评论
             last_user_id = data['result']['list'][last_comment_number-1]['id'] # 此页中最后一个评论的用户ID
             last_oder = data['result']['list'][last_comment_number-1]['floor'] # 还剩下多少个评论
-            print("Relpy"+str(eid)+'_'+str(page_num))
+            print("Reply"+str(eid)+'_'+str(page_num))
 
             #print(response.body.decode('utf-8'))
             # 把评论写进文件
-            self.save_data("Relpy"+str(eid)+'_p'+str(page_num), response.body)
+            self.save_data("Reply"+str(eid)+'_p'+str(page_num), response.body)
 
             if last_oder > 1:
                 # 评论没有完，翻页
